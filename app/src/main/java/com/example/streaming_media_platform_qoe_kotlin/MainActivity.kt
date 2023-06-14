@@ -10,16 +10,16 @@ import android.view.View
 import android.widget.*
 import kotlin.concurrent.fixedRateTimer
 
-/**
- * Created by suyashg on 01/06/17.
- */
+// Code is taken from the following repository:
+// https://github.com/Talentica/AndroidWithKotlin
 
 //Always device to run this App
 class MainActivity : AppCompatActivity(), MediaPlayer.OnCompletionListener,
     MediaPlayer.OnErrorListener, MediaPlayer.OnPreparedListener, SeekBar.OnSeekBarChangeListener,
     View.OnClickListener {
 
-    private val HLS_STREAMING_SAMPLE = "rtsp://wowzaec2demo.streamlock.net/vod/mp4:BigBuckBunny_115k.mov"
+//    private val HLS_STREAMING_SAMPLE = "rtsp://wowzaec2demo.streamlock.net/vod/mp4:BigBuckBunny_115k.mov"
+    private val HLS_STREAMING_SAMPLE = "https://media.geeksforgeeks.org/wp-content/uploads/20201217192146/Screenrecorder-2020-12-17-19-17-36-828.mp4?_=1"
     private var sampleVideoView: VideoView? = null
     private var seekBar: SeekBar? = null
     private var playPauseButton: ImageView? = null
