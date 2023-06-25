@@ -56,4 +56,25 @@
         android:layout_marginTop="10dp"
         android:layout_toRightOf="@id/runningTime" />
 
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/uriTextInput"
+        android:layout_width="30dp"
+        android:layout_height="15dp"
+        android:layout_below="@+id/seekBar">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/uriTextField"
+            android:layout_width="30dp"
+            android:layout_height="15dp"
+            android:inputType="textUri"/>
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <Button
+        android:id="@+id/downloadButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/uriTextInput"
+        android:onClick="downloadInputUri"
+        android:text="@string/go" />
+
 </RelativeLayout>

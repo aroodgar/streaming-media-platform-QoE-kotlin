@@ -24,6 +24,7 @@ class MainActivity : AppCompatActivity(), MediaPlayer.OnCompletionListener,
     private var seekBar: SeekBar? = null
     private var playPauseButton: ImageView? = null
     private var stopButton: ImageView? = null
+    private var uriTextField: com.google.android.material.textfield.TextInputEditText? = null
     private var runningTime: TextView? = null
     private var currentPosition: Int = 0
     private var isRunning = false
@@ -32,6 +33,8 @@ class MainActivity : AppCompatActivity(), MediaPlayer.OnCompletionListener,
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        uriTextField = findViewById<com.google.android.material.textfield.TextInputEditText>(R.id.uriTextField)
 
         sampleVideoView = findViewById<VideoView>(R.id.videoView)
         sampleVideoView?.setVideoURI(Uri.parse(HLS_STREAMING_SAMPLE))
@@ -91,6 +94,10 @@ class MainActivity : AppCompatActivity(), MediaPlayer.OnCompletionListener,
         runOnUiThread {
             runningTime?.setText(minute.toString() + ":" + second.toString());
         }
+    }
+
+    fun downloadInputUri(view: View) {
+        sampleVideoView?.setVideoURI(Uri.parse(uriTextField?.text.toString()))
     }
 
     var refreshTime = Runnable() {
