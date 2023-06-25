@@ -3,11 +3,13 @@ package com.example.streaming_media_platform_qoe_kotlin
 import android.app.ProgressDialog
 import android.media.MediaPlayer
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import android.util.Log
 import android.view.View
 import android.widget.*
+import androidx.annotation.RequiresApi
 import kotlin.concurrent.fixedRateTimer
 
 // Code is taken from the following repository:
@@ -59,8 +61,10 @@ class MainActivity : AppCompatActivity(), MediaPlayer.OnCompletionListener,
         sampleVideoView?.setOnPreparedListener(this)
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onCompletion(mp: MediaPlayer?) {
         Toast.makeText(baseContext, "Play finished", Toast.LENGTH_LONG).show()
+        Log.e("metrics", "" + mp?.metrics.toString())
     }
 
     override fun onError(mp: MediaPlayer?, what: Int, extra: Int): Boolean {
