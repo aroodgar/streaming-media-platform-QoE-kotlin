@@ -1,80 +1,206 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:paddingBottom="@dimen/activity_vertical_margin"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin">
+    android:layout_height="match_parent">
 
-    <VideoView
-        android:id="@+id/videoView"
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentTop="true" />
+        android:layout_height="wrap_content">
 
-    <ImageView
-        android:id="@+id/playPauseButton"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_below="@+id/videoView"
-        android:layout_marginTop="5dp"
-        android:src="@mipmap/play_button" />
+        <TextView
+            android:id="@+id/http_data_source_title_textView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="32dp"
+            android:text="HttpDataSourceFactory parameters"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/stream_url_edittext" />
 
-    <ImageView
-        android:id="@+id/stopButton"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:layout_below="@+id/videoView"
-        android:layout_marginLeft="2dp"
-        android:layout_marginTop="5dp"
-        android:layout_toRightOf="@id/playPauseButton"
-        android:src="@mipmap/stop_button" />
+        <Button
+            android:id="@+id/start_streaming_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="32dp"
+            android:layout_marginEnd="32dp"
+            android:layout_marginBottom="32dp"
+            android:text="Start Streaming"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/bufferForPlaybackAfterRebufferMs_editTextNumber" />
 
-    <TextView
-        android:id="@+id/runningTime"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/videoView"
-        android:layout_marginLeft="5dp"
-        android:layout_marginTop="15dp"
-        android:layout_toRightOf="@id/stopButton"
-        android:text="00:00"
-        android:textColor="@android:color/black"
-        android:textSize="16dp" />
+        <EditText
+            android:id="@+id/stream_url_edittext"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:ems="15"
+            android:inputType="textUri"
+            app:layout_constraintStart_toStartOf="@+id/stream_url_textView"
+            app:layout_constraintTop_toBottomOf="@+id/stream_url_textView" />
 
-    <SeekBar
-        android:id="@+id/seekBar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/videoView"
-        android:layout_marginTop="10dp"
-        android:layout_toRightOf="@id/runningTime" />
+        <TextView
+            android:id="@+id/stream_url_textView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="24dp"
+            android:text="Stream URL"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/uriTextInput"
-        android:layout_width="30dp"
-        android:layout_height="15dp"
-        android:layout_below="@+id/seekBar">
+        <TextView
+            android:id="@+id/connectTimeoutMillis_textView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="connectTimeoutMillis"
+            app:layout_constraintStart_toStartOf="@+id/stream_url_textView"
+            app:layout_constraintTop_toBottomOf="@+id/http_data_source_title_textView" />
 
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/uriTextField"
-            android:layout_width="30dp"
-            android:layout_height="15dp"
-            android:inputType="textUri"/>
-    </com.google.android.material.textfield.TextInputLayout>
+        <EditText
+            android:id="@+id/connectTimeoutMillis_editTextNumber"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="32dp"
+            android:ems="2"
+            android:inputType="number"
+            android:text="0"
+            app:layout_constraintBottom_toBottomOf="@+id/connectTimeoutMillis_textView"
+            app:layout_constraintStart_toEndOf="@+id/connectTimeoutMillis_textView"
+            app:layout_constraintTop_toTopOf="@+id/connectTimeoutMillis_textView" />
 
-    <Button
-        android:id="@+id/downloadButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_above="@+id/uriTextInput"
-        android:onClick="downloadInputUri"
-        android:text="@string/go" />
+        <TextView
+            android:id="@+id/readTimeoutMillis_textView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="32dp"
+            android:text="readTimeoutMillis"
+            app:layout_constraintStart_toStartOf="@+id/connectTimeoutMillis_textView"
+            app:layout_constraintTop_toBottomOf="@+id/connectTimeoutMillis_textView" />
 
-</RelativeLayout>
+        <EditText
+            android:id="@+id/readTimeoutMillis_editTextNumber"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ems="2"
+            android:inputType="number"
+            android:text="0"
+            app:layout_constraintBottom_toBottomOf="@+id/readTimeoutMillis_textView"
+            app:layout_constraintStart_toStartOf="@+id/connectTimeoutMillis_editTextNumber"
+            app:layout_constraintTop_toTopOf="@+id/readTimeoutMillis_textView" />
+
+        <TextView
+            android:id="@+id/LoadControl_textView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="32dp"
+            android:text="LoadControl parameters"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="@+id/http_data_source_title_textView"
+            app:layout_constraintTop_toBottomOf="@+id/readTimeoutMillis_textView" />
+
+        <TextView
+            android:id="@+id/default_buffer_segment_size_textview"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="DEFAULT_BUFFER_SEGMENT_SIZE"
+            app:layout_constraintStart_toStartOf="@+id/LoadControl_textView"
+            app:layout_constraintTop_toBottomOf="@+id/LoadControl_textView" />
+
+        <EditText
+            android:id="@+id/default_buffer_segment_size_editTextNumber"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ems="8"
+            android:inputType="number"
+            android:text="65536"
+            app:layout_constraintStart_toStartOf="@+id/readTimeoutMillis_editTextNumber"
+            app:layout_constraintTop_toBottomOf="@+id/default_buffer_segment_size_textview" />
+
+        <TextView
+            android:id="@+id/minBufferMs_textView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="32dp"
+            android:text="minBufferMs"
+            app:layout_constraintStart_toStartOf="@+id/maxBufferMs_textView"
+            app:layout_constraintTop_toBottomOf="@+id/default_buffer_segment_size_editTextNumber" />
+
+        <EditText
+            android:id="@+id/minBufferMs_editTextNumber"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ems="6"
+            android:inputType="number"
+            android:text="15000"
+            app:layout_constraintBottom_toBottomOf="@+id/minBufferMs_textView"
+            app:layout_constraintStart_toStartOf="@+id/default_buffer_segment_size_editTextNumber"
+            app:layout_constraintTop_toTopOf="@+id/minBufferMs_textView" />
+
+        <TextView
+            android:id="@+id/maxBufferMs_textView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:text="maxBufferMs"
+            app:layout_constraintStart_toStartOf="@+id/bufferForPlaybackMs_textView"
+            app:layout_constraintTop_toBottomOf="@+id/minBufferMs_textView" />
+
+        <TextView
+            android:id="@+id/bufferForPlaybackMs_textView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:text="bufferForPlaybackMs"
+            app:layout_constraintStart_toStartOf="@+id/bufferForPlaybackAfterRebufferMs_textView"
+            app:layout_constraintTop_toBottomOf="@+id/maxBufferMs_textView" />
+
+        <TextView
+            android:id="@+id/bufferForPlaybackAfterRebufferMs_textView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:text="bufferForPlaybackAfterRebufferMs"
+            app:layout_constraintStart_toStartOf="@+id/stream_url_textView"
+            app:layout_constraintTop_toBottomOf="@+id/bufferForPlaybackMs_textView" />
+
+        <EditText
+            android:id="@+id/maxBufferMs_editTextNumber"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ems="6"
+            android:inputType="number"
+            android:text="50000"
+            app:layout_constraintBottom_toBottomOf="@+id/maxBufferMs_textView"
+            app:layout_constraintStart_toStartOf="@+id/minBufferMs_editTextNumber"
+            app:layout_constraintTop_toTopOf="@+id/maxBufferMs_textView" />
+
+        <EditText
+            android:id="@+id/bufferForPlaybackMs_editTextNumber"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ems="4"
+            android:inputType="number"
+            android:text="2500"
+            app:layout_constraintBottom_toBottomOf="@+id/bufferForPlaybackMs_textView"
+            app:layout_constraintStart_toStartOf="@+id/maxBufferMs_editTextNumber"
+            app:layout_constraintTop_toTopOf="@+id/bufferForPlaybackMs_textView" />
+
+        <EditText
+            android:id="@+id/bufferForPlaybackAfterRebufferMs_editTextNumber"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ems="4"
+            android:inputType="number"
+            android:text="5000"
+            app:layout_constraintStart_toStartOf="@+id/bufferForPlaybackMs_editTextNumber"
+            app:layout_constraintTop_toBottomOf="@+id/bufferForPlaybackAfterRebufferMs_textView" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</ScrollView>
