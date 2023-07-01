@@ -35,9 +35,10 @@ import com.example.streaming_media_platform_qoe_kotlin.Constants.READ_TIMEOUT_KE
 import com.example.streaming_media_platform_qoe_kotlin.Constants.STREAM_URL_KEY
 import com.example.streaming_media_platform_qoe_kotlin.databinding.ActivityPlayerBinding
 import com.example.streaming_media_platform_qoe_kotlin.exoplayer.CustomLoadControl
-import com.example.streaming_media_platform_qoe_kotlin.exoplayer.CustomLoadErrorHandlingPolicy
+import com.example.streaming_media_platform_qoe_kotlin.data_models.DecoderCountersData
 import com.google.android.exoplayer2.*
 import com.google.android.exoplayer2.audio.AudioAttributes
+import com.google.android.exoplayer2.decoder.DecoderCounters
 import com.google.android.exoplayer2.ext.okhttp.OkHttpDataSourceFactory
 import com.google.android.exoplayer2.mediacodec.MediaCodecRenderer.DecoderInitializationException
 import com.google.android.exoplayer2.mediacodec.MediaCodecUtil.DecoderQueryException
@@ -65,7 +66,6 @@ import okhttp3.Protocol
 import java.net.CookieHandler
 import java.net.CookieManager
 import java.net.CookiePolicy
-import java.time.Duration
 import java.util.*
 import java.util.concurrent.TimeUnit
 
@@ -455,6 +455,27 @@ class PlayerActivity : AppCompatActivity(), PlaybackPreparer, StyledPlayerContro
             4 -> "STATE_ENDED"
             else -> ""
         }
+    }
+
+    private fun getGeneralDecoderCountersBufferCountData(player: SimpleExoPlayer): DecoderCountersData? {
+        var tmpDecoderCounters: DecoderCounters? = player.videoDecoderCounters ?: return null
+
+        var decoderCounters: DecoderCounters = tmpDecoderCounters as DecoderCounters
+        decoderCounters.ensureUpdated()
+
+        return DecoderCountersData(
+            decoderInitCount = decoderCounters.decoderInitCount,
+            decoderReleaseCount = decoderCounters.decoderReleaseCount,
+            inputBufferCount = decoderCounters.inputBufferCount,
+            skippedInputBufferCount = decoderCounters.skippedInputBufferCount,
+            renderedOutputBufferCount = decoderCounters.renderedOutputBufferCount,
+            skippedOutputBufferCount = decoderCounters.skippedOutputBufferCount,
+            droppedBufferCount = decoderCounters.droppedBufferCount,
+            maxConsecutiveDroppedBufferCount = decoderCounters.maxConsecutiveDroppedBufferCount,
+            droppedToKeyframeCount = decoderCounters.droppedToKeyframeCount,
+            totalVideoFrameProcessingOffsetUs = decoderCounters.totalVideoFrameProcessingOffsetUs,
+            videoFrameProcessingOffsetCount = decoderCounters.videoFrameProcessingOffsetCount
+        )
     }
     private inner class PlayerEventListener : Player.EventListener {
         override fun onPlaybackStateChanged(@Player.State playbackState: Int) {
