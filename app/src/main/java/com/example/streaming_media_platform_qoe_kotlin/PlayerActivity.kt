@@ -457,6 +457,13 @@ class PlayerActivity : AppCompatActivity(), PlaybackPreparer, StyledPlayerContro
         }
     }
 
+    private fun printPlayWhenReady(value: Boolean): String {
+        return when (value) {
+            true -> "PLAY_WHEN_READY_TRUE"
+            false -> "PLAY_WHEN_READY_FALSE"
+        }
+    }
+
     private fun getGeneralDecoderCountersBufferCountData(player: SimpleExoPlayer): DecoderCountersData? {
         var tmpDecoderCounters: DecoderCounters? = player.videoDecoderCounters ?: return null
 
@@ -496,6 +503,19 @@ class PlayerActivity : AppCompatActivity(), PlaybackPreparer, StyledPlayerContro
                 }
             }
 //            updateButtonVisibility()
+        }
+
+        override fun onPlayWhenReadyChanged(playWhenReady: Boolean, @Player.PlayWhenReadyChangeReason reason: Int) {
+//            super.onPlayWhenReadyChanged(playWhenReady, reason)
+            Log.d("EventLogger", "onPlayWhenReadyChanged type ${printPlayWhenReady(playWhenReady)}");
+            when (playWhenReady) {
+                true -> {
+                    binding.debugTextView.append("/n PLAY_WHEN_READY_TRUE")
+                }
+                false -> {
+                    binding.debugTextView.append("/n PLAY_WHEN_READY_FALSE")
+                }
+            }
         }
 
         override fun onPlayerError(e: ExoPlaybackException) {
