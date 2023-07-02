@@ -1,5 +1,42 @@
 package com.example.streaming_media_platform_qoe_kotlin.data_models
 
+enum class DecoderCountersDataStrId {
+    DECODER_INIT_COUNT {
+        override fun getStr() = "decInitCnt"
+    },
+    DECODER_RELEASE_COUNT {
+        override fun getStr() = "decRelCnt"
+    },
+    INPUT_BUFFER_COUNT {
+        override fun getStr() = "inpBufCnt"
+    },
+    SKIPPED_INPUT_BUFFER_COUNT {
+        override fun getStr() = "skpInpBufCnt"
+    },
+    RENDERED_OUTPUT_BUFFER_COUNT {
+        override fun getStr() = "rendOutBufCnt"
+    },
+    SKIPPED_OUTPUT_BUFFER_COUNT {
+        override fun getStr() = "skpOutBufCnt"
+    },
+    DROPPED_BUFFER_COUNT {
+        override fun getStr() = "drpBufCnt"
+    },
+    MAX_CONSECUTIVE_DROPPED_BUFFER_COUNT {
+        override fun getStr() = "maxConsecDrpBufCnt"
+    },
+    DROPPED_TO_KEY_FRAME_COUNT {
+        override fun getStr() = "drpToKeyFrmCnt"
+    },
+    TOTAL_VIDEO_FRAME_PROCESSING_OFFSET_US {
+        override fun getStr() = "totalVidFrmProcOffsetUs"
+    },
+    VIDEO_FRAME_PROCESSING_OFFSET_COUNT {
+        override fun getStr() = "vidFrmProcOffsetCnt"
+    };
+
+    abstract fun getStr(): String
+}
 public class DecoderCountersData {
 
     constructor(decoderInitCount: Int, decoderReleaseCount: Int, inputBufferCount: Int, skippedInputBufferCount: Int, renderedOutputBufferCount: Int,
@@ -16,6 +53,46 @@ public class DecoderCountersData {
         this.droppedToKeyframeCount = droppedToKeyframeCount
         this.totalVideoFrameProcessingOffsetUs = totalVideoFrameProcessingOffsetUs
         this.videoFrameProcessingOffsetCount = videoFrameProcessingOffsetCount
+    }
+
+    public override fun toString(): String {
+        val decInitCntStr: String =
+            "${DecoderCountersDataStrId.DECODER_INIT_COUNT.getStr()}=${decoderInitCount}"
+        val decRelCnt: String =
+            "${DecoderCountersDataStrId.DECODER_RELEASE_COUNT.getStr()}=${decoderReleaseCount}"
+        val inpBufCntStr: String =
+            "${DecoderCountersDataStrId.INPUT_BUFFER_COUNT.getStr()}=${inputBufferCount}"
+        val skpInpBufCntStr: String =
+            "${DecoderCountersDataStrId.SKIPPED_INPUT_BUFFER_COUNT.getStr()}=${skippedInputBufferCount}"
+        val rendOutBufCntStr: String =
+            "${DecoderCountersDataStrId.RENDERED_OUTPUT_BUFFER_COUNT.getStr()}=${renderedOutputBufferCount}"
+        val skpOutBufCntStr: String =
+            "${DecoderCountersDataStrId.SKIPPED_OUTPUT_BUFFER_COUNT.getStr()}=${skippedOutputBufferCount}"
+        val drpBufCntStr: String =
+            "${DecoderCountersDataStrId.DROPPED_BUFFER_COUNT.getStr()}=${droppedBufferCount}"
+        val maxConsecDrpBufCntStr: String =
+            "${DecoderCountersDataStrId.MAX_CONSECUTIVE_DROPPED_BUFFER_COUNT.getStr()}=${maxConsecutiveDroppedBufferCount}"
+        val drpToKeyFrmCntStr: String =
+            "${DecoderCountersDataStrId.DROPPED_TO_KEY_FRAME_COUNT.getStr()}=${droppedToKeyframeCount}"
+        val totalVidFrmProcOffsetUsStr: String =
+            "${DecoderCountersDataStrId.TOTAL_VIDEO_FRAME_PROCESSING_OFFSET_US.getStr()}=${totalVideoFrameProcessingOffsetUs}"
+        val vidFrmProcOffsetCntStr: String =
+            "${DecoderCountersDataStrId.VIDEO_FRAME_PROCESSING_OFFSET_COUNT.getStr()}=${videoFrameProcessingOffsetCount}"
+
+        val strings: List<String> = listOf(
+            decInitCntStr,
+            decRelCnt,
+            inpBufCntStr,
+            skpInpBufCntStr,
+            rendOutBufCntStr,
+            skpOutBufCntStr,
+            drpBufCntStr,
+            maxConsecDrpBufCntStr,
+            drpToKeyFrmCntStr,
+            totalVidFrmProcOffsetUsStr,
+            vidFrmProcOffsetCntStr
+        )
+        return strings.joinToString(separator = ",")
     }
     /**
      * The number of times a decoder has been initialized.
