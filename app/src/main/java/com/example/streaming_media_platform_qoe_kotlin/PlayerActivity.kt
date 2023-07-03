@@ -35,7 +35,9 @@ import com.example.streaming_media_platform_qoe_kotlin.Constants.READ_TIMEOUT_KE
 import com.example.streaming_media_platform_qoe_kotlin.Constants.STREAM_URL_KEY
 import com.example.streaming_media_platform_qoe_kotlin.databinding.ActivityPlayerBinding
 import com.example.streaming_media_platform_qoe_kotlin.exoplayer.CustomLoadControl
+import com.example.streaming_media_platform_qoe_kotlin.exoplayer.PlayerEventLogger
 import com.example.streaming_media_platform_qoe_kotlin.data_models.DecoderCountersData
+import com.example.streaming_media_platform_qoe_kotlin.data_models.Utils
 import com.google.android.exoplayer2.*
 import com.google.android.exoplayer2.audio.AudioAttributes
 import com.google.android.exoplayer2.decoder.DecoderCounters
@@ -118,6 +120,10 @@ class PlayerActivity : AppCompatActivity(), PlaybackPreparer, StyledPlayerContro
     private var startWindow = 0
     private var startPosition: Long = 0
 
+    private var lastPlaybackState: Int = Player.STATE_BUFFERING
+    private var playerEventLogger: PlayerEventLogger? = null
+    private var readyForLog: Boolean = false
+
     // Fields used only for ad playback.
     private var adsLoader: AdsLoader? = null
     private var loadedAdTagUri: Uri? = null
@@ -135,6 +141,8 @@ class PlayerActivity : AppCompatActivity(), PlaybackPreparer, StyledPlayerContro
         binding = ActivityPlayerBinding.inflate(layoutInflater)
         val view = binding.root
         setContentView(view)
+
+        playerEventLogger = PlayerEventLogger()
 
         val userAgent = Util.getUserAgent(this, getString(R.string.app_name))
 
@@ -233,6 +241,7 @@ class PlayerActivity : AppCompatActivity(), PlaybackPreparer, StyledPlayerContro
 
     public override fun onPause() {
         super.onPause()
+//        Log.d("onPause()", "playWhenReady: ${player!!.playWhenReady}, playbackState: ${player!!.playbackState}")
         if (Util.SDK_INT <= 23) {
             if (binding.playerView != null) {
                 binding.playerView.onPause()
@@ -379,6 +388,7 @@ class PlayerActivity : AppCompatActivity(), PlaybackPreparer, StyledPlayerContro
 //        player!!.setMediaItems(mediaItems!!,  /* resetPosition= */!haveStartPosition)
         player!!.prepare()
 //        updateButtonVisibility()
+        readyForLog = true
         return true
     }
 
@@ -457,6 +467,15 @@ class PlayerActivity : AppCompatActivity(), PlaybackPreparer, StyledPlayerContro
         }
     }
 
+    private fun trackRecordsOnStartPlaying() {
+        var decoderCountersData: DecoderCountersData? = Utils.getGeneralDecoderCountersBufferCountData(player!!)
+        if (decoderCountersData == null) {
+            Log.d("EventLogger", "trackRecordsOnStartPlaying type: null")
+            return
+        }
+        Log.d("EventLogger", "trackRecordsOnStartPlaying type: inputBufferCount = ${decoderCountersData.inputBufferCount}")
+    }
+
     private fun printPlayWhenReady(value: Boolean): String {
         return when (value) {
             true -> "PLAY_WHEN_READY_TRUE"
@@ -464,26 +483,6 @@ class PlayerActivity : AppCompatActivity(), PlaybackPreparer, StyledPlayerContro
         }
     }
 
-    private fun getGeneralDecoderCountersBufferCountData(player: SimpleExoPlayer): DecoderCountersData? {
-        var tmpDecoderCounters: DecoderCounters? = player.videoDecoderCounters ?: return null
-
-        var decoderCounters: DecoderCounters = tmpDecoderCounters as DecoderCounters
-        decoderCounters.ensureUpdated()
-
-        return DecoderCountersData(
-            decoderInitCount = decoderCounters.decoderInitCount,
-            decoderReleaseCount = decoderCounters.decoderReleaseCount,
-            inputBufferCount = decoderCounters.inputBufferCount,
-            skippedInputBufferCount = decoderCounters.skippedInputBufferCount,
-            renderedOutputBufferCount = decoderCounters.renderedOutputBufferCount,
-            skippedOutputBufferCount = decoderCounters.skippedOutputBufferCount,
-            droppedBufferCount = decoderCounters.droppedBufferCount,
-            maxConsecutiveDroppedBufferCount = decoderCounters.maxConsecutiveDroppedBufferCount,
-            droppedToKeyframeCount = decoderCounters.droppedToKeyframeCount,
-            totalVideoFrameProcessingOffsetUs = decoderCounters.totalVideoFrameProcessingOffsetUs,
-            videoFrameProcessingOffsetCount = decoderCounters.videoFrameProcessingOffsetCount
-        )
-    }
     private inner class PlayerEventListener : Player.EventListener {
         override fun onPlaybackStateChanged(@Player.State playbackState: Int) {
             Log.d("EventLogger", "onPlaybackStateChanged type ${printPlaybackState(playbackState)}");
@@ -502,6 +501,16 @@ class PlayerActivity : AppCompatActivity(), PlaybackPreparer, StyledPlayerContro
                     binding.debugTextView.append("/n STATE_READY /n")
                 }
             }
+
+            if (lastPlaybackState == Player.STATE_BUFFERING && playbackState == Player.STATE_READY && player!!.playWhenReady) {
+                trackRecordsOnStartPlaying()
+            }
+
+            lastPlaybackState = playbackState
+            if (readyForLog && playerEventLogger != null && player != null) {
+                playerEventLogger!!.createNewLog(player!!)
+            }
+
 //            updateButtonVisibility()
         }
 
@@ -515,6 +524,9 @@ class PlayerActivity : AppCompatActivity(), PlaybackPreparer, StyledPlayerContro
                 false -> {
                     binding.debugTextView.append("/n PLAY_WHEN_READY_FALSE")
                 }
+            }
+            if (readyForLog && playerEventLogger != null && player != null) {
+                playerEventLogger!!.createNewLog(player!!)
             }
         }
 
