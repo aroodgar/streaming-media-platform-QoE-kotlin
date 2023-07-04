@@ -508,7 +508,7 @@ class PlayerActivity : AppCompatActivity(), PlaybackPreparer, StyledPlayerContro
 
             lastPlaybackState = playbackState
             if (readyForLog && playerEventLogger != null && player != null) {
-                playerEventLogger!!.createNewLog(player!!)
+                playerEventLogger!!.createNewLog(player!!, applicationContext)
             }
 
 //            updateButtonVisibility()
@@ -526,7 +526,7 @@ class PlayerActivity : AppCompatActivity(), PlaybackPreparer, StyledPlayerContro
                 }
             }
             if (readyForLog && playerEventLogger != null && player != null) {
-                playerEventLogger!!.createNewLog(player!!)
+                playerEventLogger!!.createNewLog(player!!, applicationContext)
             }
         }
 
