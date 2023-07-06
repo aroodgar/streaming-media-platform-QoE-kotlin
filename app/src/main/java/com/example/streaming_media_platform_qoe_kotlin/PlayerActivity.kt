@@ -35,7 +35,7 @@ import com.example.streaming_media_platform_qoe_kotlin.Constants.READ_TIMEOUT_KE
 import com.example.streaming_media_platform_qoe_kotlin.Constants.STREAM_URL_KEY
 import com.example.streaming_media_platform_qoe_kotlin.databinding.ActivityPlayerBinding
 import com.example.streaming_media_platform_qoe_kotlin.exoplayer.CustomLoadControl
-import com.example.streaming_media_platform_qoe_kotlin.exoplayer.PlayerEventLogger
+//import com.example.streaming_media_platform_qoe_kotlin.exoplayer.PlayerEventLogger
 import com.example.streaming_media_platform_qoe_kotlin.data_models.DecoderCountersData
 import com.example.streaming_media_platform_qoe_kotlin.data_models.Utils
 import com.google.android.exoplayer2.*
@@ -121,7 +121,7 @@ class PlayerActivity : AppCompatActivity(), PlaybackPreparer, StyledPlayerContro
     private var startPosition: Long = 0
 
     private var lastPlaybackState: Int = Player.STATE_BUFFERING
-    private var playerEventLogger: PlayerEventLogger? = null
+    ///private var playerEventLogger: PlayerEventLogger? = null
     private var readyForLog: Boolean = false
 
     // Fields used only for ad playback.
@@ -142,7 +142,7 @@ class PlayerActivity : AppCompatActivity(), PlaybackPreparer, StyledPlayerContro
         val view = binding.root
         setContentView(view)
 
-        playerEventLogger = PlayerEventLogger()
+        // playerEventLogger = PlayerEventLogger()
 
         val userAgent = Util.getUserAgent(this, getString(R.string.app_name))
 
@@ -515,9 +515,9 @@ class PlayerActivity : AppCompatActivity(), PlaybackPreparer, StyledPlayerContro
             }
 
             lastPlaybackState = playbackState
-            if (readyForLog && playerEventLogger != null && player != null) {
-                playerEventLogger!!.createNewLog(player!!)
-            }
+            // if (readyForLog && playerEventLogger != null && player != null) {
+            //     playerEventLogger!!.createNewLog(player!!)
+            // }
 
 //            updateButtonVisibility()
         }
@@ -533,9 +533,9 @@ class PlayerActivity : AppCompatActivity(), PlaybackPreparer, StyledPlayerContro
                     binding.debugTextView.append("/n PLAY_WHEN_READY_FALSE")
                 }
             }
-            if (readyForLog && playerEventLogger != null && player != null) {
-                playerEventLogger!!.createNewLog(player!!)
-            }
+            // if (readyForLog && playerEventLogger != null && player != null) {
+            //     //playerEventLogger!!.createNewLog(player!!)
+            // }
         }
 
         override fun onPlayerError(e: ExoPlaybackException) {
