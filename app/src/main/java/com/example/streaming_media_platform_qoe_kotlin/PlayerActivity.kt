@@ -491,8 +491,16 @@ class PlayerActivity : AppCompatActivity(), PlaybackPreparer, StyledPlayerContro
                     binding.debugTextView.append("/n STATE_BUFFERING /n")
                 }
                 Player.STATE_ENDED -> {
+                    var decData: DecoderCountersData = Utils.getGeneralDecoderCountersBufferCountData(player!!)!!
                     binding.debugTextView.append("/n STATE_ENDED /n")
                     showControls()
+                    val inpBufCntTotal: Int = decData.inputBufferCount
+                    val inpBufStr: String = "Input Buffer Count = ${inpBufCntTotal}\nDuration = ${player!!.duration}\nInput Buffer Count (/sec) = ${inpBufCntTotal.toFloat() / (player!!.duration / 1000)}"
+                    val outBufCntTotal: Int = decData.renderedOutputBufferCount + decData.skippedOutputBufferCount
+                    val outBufStr: String = "Output Buffer Count = ${outBufCntTotal}"
+                    val compressoinRate: Float = outBufCntTotal.toFloat() / inpBufCntTotal.toFloat()
+                    val compressionRateStr: String = "Compression Rate = ${compressoinRate}"
+                    showToast(inpBufStr + "\n" + outBufStr + "\n" + compressionRateStr)
                 }
                 Player.STATE_IDLE -> {
                     binding.debugTextView.append("/n STATE_IDLE /n")
