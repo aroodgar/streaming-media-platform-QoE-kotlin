@@ -43,6 +43,8 @@ import java.util.Arrays;
  * The custom {@link LoadControl} implementation.
  * Implementing Drip feeding as in: https://medium.com/@filipluch/how-to-improve-buffering-by-4-times-with-drip-feeding-technique-in-exoplayer-on-android-b59eb0c4d9cc
  */
+// code of customized buffer and custom error handling is the work of the following repo:
+// https://github.com/DaliaAyman/ExoPlayer-CustomizedBuffer
 public class CustomLoadControl implements LoadControl {
 
     /**
