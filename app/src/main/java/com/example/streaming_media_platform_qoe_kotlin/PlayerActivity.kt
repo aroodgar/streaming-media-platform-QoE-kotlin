@@ -340,7 +340,7 @@ class PlayerActivity : AppCompatActivity(), PlaybackPreparer, StyledPlayerContro
             val renderersFactory: RenderersFactory = DefaultRenderersFactory(this)
 
             val mediaSourceFactory = prepareAudioSourceForUrl(streamUrl)
-            val videMediaSourceFactory = prepareVideoSourceForUrl(streamUrl)
+//            val videMediaSourceFactory = prepareVideoSourceForUrl(streamUrl)
 
 //                DefaultMediaSourceFactory(dataSourceFactory!!)
 //                    .setAdsLoaderProvider { adTagUri: Uri ->
@@ -372,8 +372,8 @@ class PlayerActivity : AppCompatActivity(), PlaybackPreparer, StyledPlayerContro
                 .setTrackSelector(trackSelector!!)
                 .setLoadControl(customLoadControl!!)
                 .build()
-//            player!!.setMediaSource(mediaSourceFactory)
-            player!!.setMediaSource(videMediaSourceFactory)
+            player!!.setMediaSource(mediaSourceFactory)
+//            player!!.setMediaSource(videMediaSourceFactory)
             player!!.addListener(PlayerEventListener())
             player!!.addAnalyticsListener(EventLogger(trackSelector))
             player!!.setAudioAttributes(
@@ -406,18 +406,6 @@ class PlayerActivity : AppCompatActivity(), PlaybackPreparer, StyledPlayerContro
         return ProgressiveMediaSource.Factory(dataSourceFactory!!)
 //            .setLoadErrorHandlingPolicy(CustomLoadErrorHandlingPolicy())
             .createMediaSource(mediaItem)
-    }
-
-    private fun prepareVideoSourceForUrl(url: String): MediaSource {
-        val mediaItem: MediaItem = MediaItem.fromUri(url)
-        val userAgent = Util.getUserAgent(this, getString(R.string.app_name))
-
-        return DashMediaSource.Factory(DefaultDashChunkSource.Factory(dataSourceFactory!!), DefaultHttpDataSourceFactory(
-                userAgent,
-    //                DefaultHttpDataSource.DEFAULT_CONNECT_TIMEOUT_MILLIS,
-    //                DefaultHttpDataSource.DEFAULT_READ_TIMEOUT_MILLIS,
-                connectTimeOut, readTimeOut,
-                true)).createMediaSource(mediaItem)
     }
 
     protected fun releasePlayer() {
@@ -519,9 +507,9 @@ class PlayerActivity : AppCompatActivity(), PlaybackPreparer, StyledPlayerContro
                     val inpBufStr: String = "Input Buffer Count = ${inpBufCntTotal}\nDuration = ${player!!.duration}\nInput Buffer Count (/sec) = ${inpBufCntTotal.toFloat() / (player!!.duration / 1000)}"
                     val outBufCntTotal: Int = decData.renderedOutputBufferCount + decData.skippedOutputBufferCount
                     val outBufStr: String = "Output Buffer Count = ${outBufCntTotal}"
-                    val compressoinRate: Float = outBufCntTotal.toFloat() / inpBufCntTotal.toFloat()
-                    val compressionRateStr: String = "Compression Rate = ${compressoinRate}"
-                    showToast(inpBufStr + "\n" + outBufStr + "\n" + compressionRateStr)
+                    val continuityRate: Float = outBufCntTotal.toFloat() / inpBufCntTotal.toFloat()
+                    val continuityRateStr: String = "Continuity Rate = ${continuityRate}"
+                    showToast(inpBufStr + "\n" + outBufStr + "\n" + continuityRateStr)
                 }
                 Player.STATE_IDLE -> {
                     binding.debugTextView.append("/n STATE_IDLE /n")
