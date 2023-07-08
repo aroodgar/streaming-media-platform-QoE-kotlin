@@ -35,7 +35,7 @@ import com.example.streaming_media_platform_qoe_kotlin.Constants.READ_TIMEOUT_KE
 import com.example.streaming_media_platform_qoe_kotlin.Constants.STREAM_URL_KEY
 import com.example.streaming_media_platform_qoe_kotlin.databinding.ActivityPlayerBinding
 import com.example.streaming_media_platform_qoe_kotlin.exoplayer.CustomLoadControl
-import com.example.streaming_media_platform_qoe_kotlin.exoplayer.PlayerEventLogger
+//import com.example.streaming_media_platform_qoe_kotlin.exoplayer.PlayerEventLogger
 import com.example.streaming_media_platform_qoe_kotlin.data_models.DecoderCountersData
 import com.example.streaming_media_platform_qoe_kotlin.data_models.Utils
 import com.google.android.exoplayer2.*
@@ -49,6 +49,8 @@ import com.google.android.exoplayer2.source.MediaSource
 import com.google.android.exoplayer2.source.ProgressiveMediaSource
 import com.google.android.exoplayer2.source.TrackGroupArray
 import com.google.android.exoplayer2.source.ads.AdsLoader
+import com.google.android.exoplayer2.source.dash.DashMediaSource
+import com.google.android.exoplayer2.source.dash.DefaultDashChunkSource
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector.ParametersBuilder
 import com.google.android.exoplayer2.trackselection.MappingTrackSelector.MappedTrackInfo
@@ -121,8 +123,10 @@ class PlayerActivity : AppCompatActivity(), PlaybackPreparer, StyledPlayerContro
     private var startPosition: Long = 0
 
     private var lastPlaybackState: Int = Player.STATE_BUFFERING
-    private var playerEventLogger: PlayerEventLogger? = null
-    private var readyForLog: Boolean = false
+//    private var playerEventLogger: PlayerEventLogger? = null
+//    private var readyForLog: Boolean = false
+    private var firstReadyPlaybackState: Boolean = false
+    private var videoStartTime: Long = 0
 
     // Fields used only for ad playback.
     private var adsLoader: AdsLoader? = null
@@ -142,7 +146,7 @@ class PlayerActivity : AppCompatActivity(), PlaybackPreparer, StyledPlayerContro
         val view = binding.root
         setContentView(view)
 
-        playerEventLogger = PlayerEventLogger()
+//        playerEventLogger = PlayerEventLogger()
 
         val userAgent = Util.getUserAgent(this, getString(R.string.app_name))
 
@@ -336,6 +340,7 @@ class PlayerActivity : AppCompatActivity(), PlaybackPreparer, StyledPlayerContro
             val renderersFactory: RenderersFactory = DefaultRenderersFactory(this)
 
             val mediaSourceFactory = prepareAudioSourceForUrl(streamUrl)
+            val videMediaSourceFactory = prepareVideoSourceForUrl(streamUrl)
 
 //                DefaultMediaSourceFactory(dataSourceFactory!!)
 //                    .setAdsLoaderProvider { adTagUri: Uri ->
@@ -367,7 +372,8 @@ class PlayerActivity : AppCompatActivity(), PlaybackPreparer, StyledPlayerContro
                 .setTrackSelector(trackSelector!!)
                 .setLoadControl(customLoadControl!!)
                 .build()
-            player!!.setMediaSource(mediaSourceFactory)
+//            player!!.setMediaSource(mediaSourceFactory)
+            player!!.setMediaSource(videMediaSourceFactory)
             player!!.addListener(PlayerEventListener())
             player!!.addAnalyticsListener(EventLogger(trackSelector))
             player!!.setAudioAttributes(
@@ -379,6 +385,8 @@ class PlayerActivity : AppCompatActivity(), PlaybackPreparer, StyledPlayerContro
             binding.playerView.setPlaybackPreparer(this)
             debugViewHelper = DebugTextViewHelper(player!!, binding.debugTextView!!)
             debugViewHelper!!.start()
+
+//            videoStartTime = System.currentTimeMillis()
         }
         val haveStartPosition =
             startWindow != C.INDEX_UNSET
@@ -388,7 +396,7 @@ class PlayerActivity : AppCompatActivity(), PlaybackPreparer, StyledPlayerContro
 //        player!!.setMediaItems(mediaItems!!,  /* resetPosition= */!haveStartPosition)
         player!!.prepare()
 //        updateButtonVisibility()
-        readyForLog = true
+//        readyForLog = true
         return true
     }
 
@@ -398,6 +406,18 @@ class PlayerActivity : AppCompatActivity(), PlaybackPreparer, StyledPlayerContro
         return ProgressiveMediaSource.Factory(dataSourceFactory!!)
 //            .setLoadErrorHandlingPolicy(CustomLoadErrorHandlingPolicy())
             .createMediaSource(mediaItem)
+    }
+
+    private fun prepareVideoSourceForUrl(url: String): MediaSource {
+        val mediaItem: MediaItem = MediaItem.fromUri(url)
+        val userAgent = Util.getUserAgent(this, getString(R.string.app_name))
+
+        return DashMediaSource.Factory(DefaultDashChunkSource.Factory(dataSourceFactory!!), DefaultHttpDataSourceFactory(
+                userAgent,
+    //                DefaultHttpDataSource.DEFAULT_CONNECT_TIMEOUT_MILLIS,
+    //                DefaultHttpDataSource.DEFAULT_READ_TIMEOUT_MILLIS,
+                connectTimeOut, readTimeOut,
+                true)).createMediaSource(mediaItem)
     }
 
     protected fun releasePlayer() {
@@ -485,14 +505,23 @@ class PlayerActivity : AppCompatActivity(), PlaybackPreparer, StyledPlayerContro
 
     private inner class PlayerEventListener : Player.EventListener {
         override fun onPlaybackStateChanged(@Player.State playbackState: Int) {
+            val currentTime = System.currentTimeMillis()
             Log.d("EventLogger", "onPlaybackStateChanged type ${printPlaybackState(playbackState)}");
             when(playbackState){
                 Player.STATE_BUFFERING -> {
                     binding.debugTextView.append("/n STATE_BUFFERING /n")
                 }
                 Player.STATE_ENDED -> {
+                    var decData: DecoderCountersData = Utils.getGeneralDecoderCountersBufferCountData(player!!)!!
                     binding.debugTextView.append("/n STATE_ENDED /n")
                     showControls()
+                    val inpBufCntTotal: Int = decData.inputBufferCount
+                    val inpBufStr: String = "Input Buffer Count = ${inpBufCntTotal}\nDuration = ${player!!.duration}\nInput Buffer Count (/sec) = ${inpBufCntTotal.toFloat() / (player!!.duration / 1000)}"
+                    val outBufCntTotal: Int = decData.renderedOutputBufferCount + decData.skippedOutputBufferCount
+                    val outBufStr: String = "Output Buffer Count = ${outBufCntTotal}"
+                    val compressoinRate: Float = outBufCntTotal.toFloat() / inpBufCntTotal.toFloat()
+                    val compressionRateStr: String = "Compression Rate = ${compressoinRate}"
+                    showToast(inpBufStr + "\n" + outBufStr + "\n" + compressionRateStr)
                 }
                 Player.STATE_IDLE -> {
                     binding.debugTextView.append("/n STATE_IDLE /n")
@@ -505,11 +534,20 @@ class PlayerActivity : AppCompatActivity(), PlaybackPreparer, StyledPlayerContro
             if (lastPlaybackState == Player.STATE_BUFFERING && playbackState == Player.STATE_READY && player!!.playWhenReady) {
                 trackRecordsOnStartPlaying()
             }
+            if (lastPlaybackState == Player.STATE_BUFFERING && playbackState == Player.STATE_BUFFERING && !firstReadyPlaybackState) {
+                videoStartTime = currentTime
+            }
+            if (lastPlaybackState == Player.STATE_BUFFERING && playbackState == Player.STATE_READY && !firstReadyPlaybackState) {
+                // track initial playing latency
+                Log.d("EventLogger", "start_time=${videoStartTime}, current_time=${currentTime}, initial_latency=${currentTime - videoStartTime}")
+                firstReadyPlaybackState = true
+                showToast("Initial Latency = ${currentTime - videoStartTime}ms")
+            }
 
             lastPlaybackState = playbackState
-            if (readyForLog && playerEventLogger != null && player != null) {
-                playerEventLogger!!.createNewLog(player!!, applicationContext)
-            }
+//            if (readyForLog && playerEventLogger != null && player != null) {
+//                playerEventLogger!!.createNewLog(player!!, applicationContext)
+//            }
 
 //            updateButtonVisibility()
         }
@@ -525,9 +563,9 @@ class PlayerActivity : AppCompatActivity(), PlaybackPreparer, StyledPlayerContro
                     binding.debugTextView.append("/n PLAY_WHEN_READY_FALSE")
                 }
             }
-            if (readyForLog && playerEventLogger != null && player != null) {
-                playerEventLogger!!.createNewLog(player!!, applicationContext)
-            }
+//            if (readyForLog && playerEventLogger != null && player != null) {
+//                playerEventLogger!!.createNewLog(player!!, applicationContext)
+//            }
         }
 
         override fun onPlayerError(e: ExoPlaybackException) {
