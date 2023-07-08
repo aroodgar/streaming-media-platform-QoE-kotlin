@@ -1,5 +1,21 @@
 # streaming-media-platform-QoE-kotlin
 
+## Some Theory First
+There are several metrics that can be used to measure the quality of experience (QoE) of video streaming platforms. Here are a few key metrics:
+
+- Buffering ratio: The buffering ratio is the percentage of time that a video experiences buffering or stalling during playback. This can be a significant factor in the QoE, as buffering can interrupt the viewing experience and lead to frustration for users.
+
+- Video quality: Video quality is a key factor in the QoE, and can be measured using metrics such as the peak signal-to-noise ratio (PSNR), structural similarity index (SSIM), or video quality metric (VQM). These metrics assess the quality of the encoded video stream, and can be used to determine whether the video is being delivered in high definition (HD), standard definition (SD), or some other format.
+
+- Start-up time: The start-up time is the amount of time it takes for a video to begin playing after the user initiates playback. Long start-up times can lead to frustration for users and may result in them abandoning the video.
+
+- Playback continuity: Playback continuity refers to the smoothness of the video playback. This metric can be measured using metrics such as the rebuffering ratio, which measures the percentage of the video that needs to be rebuffered during playback.
+
+- Bitrate: The bitrate is the amount of data that is transmitted per unit of time and is a key factor in determining the quality of the video stream. Higher bitrates generally result in better video quality, but can also lead to increased buffering or slower start-up times.
+
+- User engagement: User engagement metrics, such as the amount of time spent watching a video or the number of shares or comments, can also be used to measure the QoE of video streaming platforms. These metrics indicate how well the platform is meeting the needs and preferences of its users.
+
+## What is done in this repo
 This project provides the measurement of 3 QoE metrics for video streaming platforms.
 The 3 metrics are as follows:
 - Initial Latency:
@@ -8,6 +24,8 @@ The 3 metrics are as follows:
 > It will give a rough estimation of the amount of data transmitted for each second of data. This piece of data will have the most meaning when compared with the corresponding values of other streaming sources.
 - Continuity Rate:
 > The amount of input buffers that were able to be rendered without rebuffering interruptions and without being dropped.
+
+The mentiond parameters can be interpreted as closely related to some of the initially mentioned metrics in the [theoretical](#some-theory-first) section, such as `Buffering ratio`, `Start-up time` and `Playback continuity`.
 
 ## Initial Latency Measurement
 The moment that a player object (an exoplayer object in this case) is prepared for playback and sets the `playBackState` for the first time to **`STATE_BUFFERING`**, marks the begining of our timer.
