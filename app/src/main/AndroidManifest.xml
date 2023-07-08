@@ -16,6 +16,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.StreamingmediaplatformQoEkotlin"
         tools:targetApi="31">
+        <activity android:name=".PlayerActivity"></activity>
         <activity
             android:name=".MainActivity"
             android:exported="true">
