@@ -1,5 +1,5 @@
 # streaming-media-platform-QoE-kotlin
-Contributors: Amirhossein Roudgar, Mohammadali Samadi
+<!-- Contributors: Amirhossein Roudgar, Mohammadali Samadi -->
 
 ## Some Theory First
 There are several metrics that can be used to measure the quality of experience (QoE) of video streaming platforms. Here are a few key metrics:
